@@ -19,7 +19,12 @@ function getTags() {
         return '@' + tag.value.toString();
     });
 
-    var sheetDefault = getSheetByKey('defaultSheetID');
+    // Initialize tags2 and tags2Mapped to empty arrays
+    var tags2 = [];
+    var tags2Mapped = [];
+
+    try{
+          var sheetDefault = getSheetByKey('defaultSheetID');
     var tagTypes2 = sheetDefault.getRange(1, 1, sheetDefault.getLastRow(), 1).getValues().flat(); // types in the first column
     var tagList2 = sheetDefault.getRange(1, 2, sheetDefault.getLastRow(), 1).getValues().flat(); // tags in the second column
 
@@ -38,6 +43,10 @@ function getTags() {
     var tags2Mapped = tags2.map(function(tag) {
         return '#' + tag.value.toString();
     });
+    }
+    catch(error){}
+
+
 
     return {
         tags1,
