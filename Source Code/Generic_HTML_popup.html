@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base target="_top">
+    <?!= include('Stylesheet'); ?>
+</head>
+
+<body>
+    <div class="dialog">
+        <img class="logo" src="https://lh7-us.googleusercontent.com/IprvEwobZZGe0uxjsdz_pFBQBstZwVwi3zYcrAAlEwnyn64AQWdKKexanzY0yHyvUxxFSCNEppP0otAdZ8De9Hc2uxjNWKL8kmsTwwv2ne_62MAkFcLs69siUF3gftV2qCneB7QXjDnhDdnz" alt="Logo">
+        <div class="message"><?= message ?></div>
+        <div class="button-container">
+            <button class="button" onclick="google.script.host.close()">OK</button>
+        </div>
+        <div style="position: fixed; bottom: 5px; right: 5px;">
+            <a href="<?= link ?>" target="_blank" style="color: #999999; font-size: 11px; font-style: italic;">Error detail</a>
+        </div>
+    </div>
+</body>
+
+</html>

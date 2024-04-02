@@ -1,0 +1,666 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quill-mention@3.2.0/dist/quill.mention.min.js"></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/38.1.1/super-build/ckeditor.js"></script>
+
+<script>
+    var quillCondition, quillSubject;
+
+    google.script.run.withSuccessHandler(function(tags) {
+        var quillOptions = {
+            theme: 'bubble',
+            placeholder: 'Use @ to include dynamic tags, # to include default tags',
+            modules: {
+                'toolbar': false, // No toolbar
+                'mention': {
+                    allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
+                    mentionDenotationChars: ["@", "#"],
+                    source: function(searchTerm, renderList, mentionChar) {
+                        let values;
+
+                        if (mentionChar === '@') {
+                            values = tags.tags1;
+                        }
+                        if (mentionChar === '#') {
+                            values = tags.tags2;
+                        }
+                        if (searchTerm.length === 0) {
+                            renderList(values, searchTerm);
+                        } else {
+                            const matches = [];
+                            for (i = 0; i < values.length; i++)
+                                if (~values[i].value.toLowerCase().indexOf(searchTerm.toLowerCase())) matches.push(values[i]);
+                            renderList(matches, searchTerm);
+                        }
+                    },
+                },
+            },
+        };
+
+        quillSubject = new Quill('#subject-editor', quillOptions);
+        quillCondition = new Quill('#condition-editor', quillOptions);
+        handleSubjectChange();
+    }).getTags();
+
+    var emailContent = `Start composing with '@' for dynamic labels, '#' for default labels.
+                    Images can be only included by link for now.
+                    Be mindfull about the size limit of the mail
+                    Test button here is for visualizing how your dynamic data is added in the mail, for verifying how mail would look to end users, use Test mail Menu to send one mail to yourself for review`;
+
+    $(document).ready(function() {
+        google.script.run.withSuccessHandler(function(tags) {
+            CKEDITOR.ClassicEditor.create(document.getElementById("editor"), {
+
+                toolbar: {
+                    items: [
+                        'heading',
+                        '|',
+                        'bold', 'italic', 'underline', 'strikethrough',
+                        '|',
+                        'subscript', 'superscript',
+                        '|',
+                        'removeFormat',
+                        '|',
+                        'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'highlight',
+                        '|',
+                        'alignment',
+                        '|',
+                        'link', 'insertImage', 'insertTable', 'htmlEmbed',
+                        '|',
+                        'bulletedList', 'numberedList', 'todoList',
+                        '|',
+                        'outdent', 'indent',
+                        '|',
+                        'specialCharacters', 'horizontalLine',
+                        '|',
+                        'undo', 'redo',
+                        '|',
+                        'sourceEditing'
+                    ],
+                    shouldNotGroupWhenFull: true
+                },
+
+                autoImage: {
+                    inlineImages: true
+                },
+
+                list: {
+                    properties: {
+                        styles: true,
+                        startIndex: true,
+                        reversed: true
+                    }
+                },
+
+                heading: {
+                    options: [{
+                            model: 'paragraph',
+                            title: 'Paragraph',
+                            class: 'ck-heading_paragraph'
+                        },
+                        {
+                            model: 'heading1',
+                            view: 'h1',
+                            title: 'Heading 1',
+                            class: 'ck-heading_heading1'
+                        },
+                        {
+                            model: 'heading2',
+                            view: 'h2',
+                            title: 'Heading 2',
+                            class: 'ck-heading_heading2'
+                        },
+                        {
+                            model: 'heading3',
+                            view: 'h3',
+                            title: 'Heading 3',
+                            class: 'ck-heading_heading3'
+                        },
+                        {
+                            model: 'heading4',
+                            view: 'h4',
+                            title: 'Heading 4',
+                            class: 'ck-heading_heading4'
+                        },
+                        {
+                            model: 'heading5',
+                            view: 'h5',
+                            title: 'Heading 5',
+                            class: 'ck-heading_heading5'
+                        },
+                        {
+                            model: 'heading6',
+                            view: 'h6',
+                            title: 'Heading 6',
+                            class: 'ck-heading_heading6'
+                        }
+                    ]
+                },
+
+                placeholder: emailContent,
+
+                fontFamily: {
+                    options: [
+                        'default',
+                        'Arial, sans-serif',
+                        'Courier New, Courier, monospace',
+                        'Georgia, serif',
+                        'Lucida Sans Unicode, Lucida Grande, sans-serif',
+                        'Tahoma, Geneva, sans-serif',
+                        'Times New Roman, Times, serif',
+                        'Trebuchet MS, Helvetica, sans-serif',
+                        'Verdana, Geneva, sans-serif'
+                    ],
+                    supportAllValues: true
+                },
+
+                fontSize: {
+                    options: [
+                        9,
+                        11,
+                        13,
+                        'default',
+                        17,
+                        19,
+                        21
+                    ]
+                },
+
+
+                highlight: {
+                    options: [{
+                        model: 'yellowMarker',
+                        class: 'marker-yellow',
+                        title: 'Yellow Marker',
+                        color: 'yellow',
+                        type: 'marker'
+                    }]
+                },
+
+                htmlSupport: {
+                    allow: [{
+                        name: /.*/,
+                        attributes: true,
+                        classes: true,
+                        styles: true
+                    }]
+                },
+
+                htmlEmbed: {
+                    showPreviews: true
+                },
+
+                link: {
+                    decorators: {
+                        addTargetToExternalLinks: true,
+                        defaultProtocol: 'https://',
+                        toggleDownloadable: {
+                            mode: 'manual',
+                            label: 'Downloadable',
+                            attributes: {
+                                download: 'file'
+                            }
+                        }
+                    }
+                },
+                mention: {
+                    feeds: [{
+                            marker: '@',
+                            feed: tags.tags1Mapped,
+                            minimumCharacters: 0
+                        },
+                        {
+                            marker: '#',
+                            feed: tags.tags2Mapped,
+                            minimumCharacters: 0
+                        }
+                    ]
+                },
+                removePlugins: [
+                    // These two are commercial, but you can try them out without registering to a trial.
+                    'ExportPdf',
+                    'ExportWord',
+                    'CKBox',
+                    'CKFinder',
+                    'EasyImage',
+                    // This sample uses the Base64UploadAdapter to handle image uploads as it requires no configuration.
+                    // https://ckeditor.com/docs/ckeditor5/latest/features/images/image-upload/base64-upload-adapter.html
+                    // Storing images as Base64 is usually a very bad idea.
+                    // Replace it on production website with other solutions:
+                    // https://ckeditor.com/docs/ckeditor5/latest/features/images/image-upload/image-upload.html
+                    'Base64UploadAdapter',
+                    'uploadImage',
+                    'RealTimeCollaborativeComments',
+                    'RealTimeCollaborativeTrackChanges',
+                    'RealTimeCollaborativeRevisionHistory',
+                    'PresenceList',
+                    'Comments',
+                    'TrackChanges',
+                    'TrackChangesData',
+                    'RevisionHistory',
+                    'Pagination',
+                    'WProofreader',
+                    // Careful, with the Mathtype plugin CKEditor will not load when loading this sample
+                    // from a local file system (file://) - load this site via HTTP server if you enable MathType.
+                    // The following features are part of the Productivity Pack and require additional license.
+                    'SlashCommand',
+                    'Template',
+                    'DocumentOutline',
+                    'FormatPainter',
+                    'TableOfContents',
+                    'language'
+                ]
+            }).then(editor => {
+                ckEditorInstance = editor;
+
+                editor.model.document.on('change:data', function() {
+                    $("#message-body, #message-body-Wait, #table-container-body").hide();
+                });
+            }).catch(error => {
+                console.error(error);
+            });
+        }).getTags();
+
+        google.script.run.withSuccessHandler(function(data) {
+            window.attachmentTagsHTML = data;
+        }).generateAttachmentTags();
+
+        $("#unsubscribe").change(function() {
+            $("#table-container-body").hide();
+        });
+
+        $("#link").on('input', function() {
+            $("#table-container-body").hide();
+        });
+    });
+
+    function onAttachmentDataFetched(data) {
+        $('#attachments').html(data.attachmentTagsHTML);
+    }
+
+    function handleSendsMailChange(selectElement) {
+        let conditionVal = $(selectElement).val();
+
+        let elements = {
+            conditionContainer: $('#condition-container'),
+            conditionEditor: $('#condition-editor'),
+            helpButton: $('.help-btn'),
+            messageCondition: $('#message-condition'),
+            messageWaiting: $('#message-waiting'),
+            warningCondition: $('#warning-condition'),
+            nextButton: $('.btn-container input[type=submit]'),
+            tableContainer: $('#table-container'),
+            messegeVerifying: $('#message-verifying')
+        };
+
+        quillCondition.on('text-change', function() {
+            elements.messageWaiting.show();
+            elements.warningCondition.show();
+            elements.messageCondition.hide();
+            elements.messegeVerifying.hide();
+            elements.tableContainer.hide();
+            elements.nextButton.css('visibility', 'hidden');
+            conditionCheckStatus = 'pending';
+        });
+
+        if (conditionVal === 'Condition') {
+            elements.conditionContainer.show();
+            elements.conditionEditor.show();
+            elements.helpButton.show();
+            elements.messageCondition.hide();
+            elements.messegeVerifying.hide();
+            elements.messageWaiting.show();
+            elements.warningCondition.show();
+            elements.nextButton.css('visibility', 'hidden');
+            conditionCheckStatus = 'pending';
+        } else {
+            elements.conditionContainer.hide();
+            elements.conditionEditor.hide();
+            elements.helpButton.hide();
+            elements.messageCondition.hide();
+            elements.messegeVerifying.hide();
+            elements.messageWaiting.hide();
+            elements.warningCondition.hide();
+            elements.tableContainer.hide();
+            elements.nextButton.css('visibility', 'visible');
+            conditionCheckStatus = 'valid';
+        }
+    }
+
+    function handleSubjectChange() {
+        quillSubject.on('text-change', function() {
+            $('#message-subject, #message-subject-Wait, #table-container-subject, #table-container-body').hide();
+        });
+    }
+
+    function handleAttachmentActionChange(select) {
+        const messageFileApproval = $('#message-File-Approval');
+
+        if ($(select).val() === "LinkApproval") {
+            messageFileApproval.show();
+            setTimeout(() => {
+                messageFileApproval.hide();
+            }, 15000);
+        } else {
+            messageFileApproval.hide();
+        }
+    }
+
+    function handleUnsubscribeChange(select) {
+        let displaySetting = $(select).val() === 'Yes' ? 'show' : 'hide';
+        const messageUnsubscribeHelp = $('#message-unsubscribe-help');
+        $('#link-label, #link')[displaySetting]();
+
+        if (displaySetting === 'show') {
+            // Show the help message when 'Yes' is selected
+            messageUnsubscribeHelp.show();
+            // Hide the help message after 15 seconds
+            setTimeout(() => {
+                messageUnsubscribeHelp.hide();
+            }, 15000);
+        } else {
+            // Hide immediately if 'No' is selected or if the selection changes to 'No'
+            messageUnsubscribeHelp.hide();
+            $('#link').val(''); // Clear the link value if 'No' is selected
+        }
+    }
+
+    function handleQuotaActionChange(select) {
+        const quotaActionHelp = $('#quota-action-help');
+        if ($(select).val() === "CreateDrafts") {
+            quotaActionHelp.show();
+        } else {
+            quotaActionHelp.hide();
+        }
+    }
+
+    function handleExpirationIntervalChange(select) {
+        const expirationHelp = $('#expiration-help');
+        if ($(select).val() != "Never") {
+            expirationHelp.show();
+        } else {
+            expirationHelp.hide();
+        }
+    }
+
+    function addAttachment() {
+        let dynamicAttach = parseInt($("#dynamicAttach").val(), 10);
+        let defaultAttach = parseInt($("#defaultAttach").val(), 10);
+        let totalAttachments = $("#attachments-div .select-attach").length;
+
+        if (totalAttachments < dynamicAttach + defaultAttach) {
+            $('<select class="select-attach"></select>')
+                .html(window.attachmentTagsHTML)
+                .css('marginTop', '10px')
+                .appendTo('#attachments-div');
+        } else {
+            if (dynamicAttach + defaultAttach === 0) {
+                $('#message-Attachment2').css('display', 'flex').delay(15000).fadeOut();
+                $('#message-Attachment1').css('display', 'none');
+            } else {
+                $('#message-Attachment1').css('display', 'flex').delay(15000).fadeOut();
+                $('#message-Attachment2').css('display', 'none');
+            }
+        }
+    }
+
+
+
+    function removeAttachment() {
+        let attachmentsDiv = $('#attachments-div');
+        let lastAttachment = attachmentsDiv.find('.select-attach').last();
+        lastAttachment.remove();
+        $('#message-Attachment1, #message-Attachment2').hide();
+    }
+
+    function testCondition() {
+        if (quillCondition) {
+            var contentHTMLCondition = quillCondition.root.innerHTML;
+
+            // Hide waiting message and show verifying message
+            $('#message-waiting').hide();
+            $('#message-verifying').show();
+
+            google.script.run
+                .withSuccessHandler(function(html) {
+                    $('#table-container').html(html);
+                    $('#message-condition').hide();
+                    $('#message-verifying').hide();
+                    $('#table-container').show();
+                    $('.btn-container input[type=submit]').css('visibility', 'visible');
+                    conditionCheckStatus = 'valid';
+                })
+                .withFailureHandler(function(error) {
+                    $('#table-container').hide();
+                    $('#message-verifying').hide();
+                    $('#message-condition').show();
+                    conditionCheckStatus = 'invalid';
+                })
+                .testingCondition(contentHTMLCondition);
+        }
+    }
+
+    function testSubject() {
+        if (quillSubject) {
+            var contentHTMLSubject = quillSubject.root.innerHTML;
+            var sendsMailOption = $("#sends-mail").val();
+            var contentHTMLCondition;
+
+            if (sendsMailOption === "Condition") {
+                contentHTMLCondition = quillCondition.root.innerHTML;
+            }
+
+            // Show and hide appropriate elements
+            $("#message-subject-Wait").show();
+            $("#table-container-subject").hide();
+
+            google.script.run
+                .withSuccessHandler(function(html) {
+                    $("#table-container-subject").html(html);
+                    $("#message-subject").hide();
+                    $("#message-subject-Wait").hide();
+                    $("#table-container-subject").show();
+                })
+                .withFailureHandler(function(error) {
+                    $("#message-subject").show();
+                    $("#message-subject-Wait").hide();
+                    $("#table-container-subject").hide();
+                })
+                .testingSubject(sendsMailOption, contentHTMLSubject, contentHTMLCondition);
+        }
+    }
+
+    function testBody() {
+        var unsubscribeValue = $("#unsubscribe").val();
+        var linkValue = $("#link").val().trim();
+        if (unsubscribeValue === "Yes" && (linkValue === "" || !isURL(linkValue))) {
+            $("#message-unsubscribe").text("Please put a proper unsubscribe link or select 'No'.").show().delay(10000).fadeOut();
+            return false;
+        }
+
+        if (quillSubject && ckEditorInstance) {
+            var contentHTMLBody = ckEditorInstance.getData(); // Body from CKEditor
+            var contentHTMLSubject = quillSubject.root.innerHTML; // Subject from Quill
+            var sendsMailOption = $("#sends-mail").val();
+            var unsubscribeChoice = $("#unsubscribe").val();
+            var unsubscribeLink = (unsubscribeChoice === "Yes") ? $("#link").val() : null;
+            var contentHTMLCondition;
+
+            if (sendsMailOption === "Condition") {
+                contentHTMLCondition = quillCondition.root.innerHTML; // Condition from Quill
+            }
+
+            // Show and hide appropriate elements
+            $("#message-body-Wait").show();
+            $("#table-container-body").hide();
+
+            google.script.run
+                .withSuccessHandler(function(html) {
+                    $("#table-container-body").html(html);
+                    $("#message-body").hide();
+                    $("#message-body-Wait").hide();
+                    $("#table-container-body").show();
+                })
+                .withFailureHandler(function(error) {
+                    $("#message-body").show();
+                    $("#message-body-Wait").hide();
+                    $("#table-container-body").hide();
+                })
+                .testingBody(sendsMailOption, contentHTMLBody, contentHTMLSubject, contentHTMLCondition, unsubscribeChoice, unsubscribeLink);
+        }
+    }
+
+    // Function to validate Step 1
+    function validateStep1() {
+        var toValue = $("#to").val();
+        var ccValue = $("#cc").val();
+        var bccValue = $("#bcc").val();
+
+        if (toValue === ccValue || toValue === bccValue || (ccValue === bccValue && ccValue !== "None")) {
+            $("#message-recipient").show().delay(15000).fadeOut();
+            return false;
+        }
+
+        return true;
+    }
+
+    // Function to validate Step 2
+    function validateStep2() {
+        var contentHTMLSubject = quillSubject.root.innerHTML;
+        var unsubscribeValue = $("#unsubscribe").val();
+        var linkValue = $("#link").val().trim();
+
+        if (!contentHTMLSubject || contentHTMLSubject.trim() === "" || contentHTMLSubject === "<p><br></p>") {
+            $("#message-subject-2").text("Subject can't be blank.").show().delay(10000).fadeOut();
+            return false;
+        }
+
+        if (unsubscribeValue === "Yes" && (linkValue === "" || !isURL(linkValue))) {
+            $("#message-unsubscribe").text("Please put a proper unsubscribe link or select 'No'.").show().delay(10000).fadeOut();
+            return false;
+        }
+
+        return true;
+    }
+
+    // Helper function to check if a string is a URL
+    function isURL(str) {
+        var pattern = new RegExp('^(https:\\/\\/)+' + // Only allow https protocol
+            '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+            '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+            '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+            '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+        return !!pattern.test(str);
+    }
+
+
+    // Function to validate Attachments
+    function validateAttachments() {
+        var attachmentValues = $.map($(".select-attach"), function(attach) {
+            return $(attach).val();
+        });
+
+        if (attachmentValues.includes("")) {
+            $("#message-Attachment4").show().delay(15000).fadeOut();
+            return false;
+        }
+
+        var uniqueAttachmentValues = new Set(attachmentValues);
+        if (uniqueAttachmentValues.size < attachmentValues.length) {
+            $("#message-Attachment3").show().delay(15000).fadeOut();
+            return false;
+        }
+
+        return true; // If everything is fine
+    }
+
+    function nextStep(event, currentStep, nextStep) {
+        event.preventDefault();
+
+        let isValid;
+        switch (currentStep) {
+            case 'step1':
+                isValid = validateStep1();
+                break;
+            case 'step2':
+                isValid = validateStep2();
+                break;
+            case 'step3':
+                isValid = validateAttachments();
+                break;
+            default:
+                isValid = true;
+        }
+
+        if (isValid) {
+            if (nextStep) {
+                $(`#${currentStep}`).removeClass('active');
+                $(`#${nextStep}`).addClass('active');
+            }
+        }
+    }
+
+    function previousStep(event, currentStep, previousStep) {
+        event.preventDefault();
+        $(`#${currentStep}`).removeClass('active');
+        $(`#${previousStep}`).addClass('active');
+    }
+
+    function submitForm(event) {
+        event.preventDefault();
+    }
+
+
+    function submitFormWithValidation(event) {
+        event.preventDefault();
+
+        if (validateAttachments()) {
+
+            $('#Saving-Template').css('display', 'flex');
+
+            const templateData = {
+                rowCount: parseInt($('#rowCount').val(), 10),
+                to: $('#to').val(),
+                cc: $('#cc').val(),
+                bcc: $('#bcc').val(),
+                quotaAction: $('#quotaAction').val(),
+                expirationInterval: $('#expiration-interval').val(),
+                sendsMailOption: $('#sends-mail').val(),
+                contentHTMLCondition: ($('#sends-mail').val() === "Condition") ? quillCondition.root.innerHTML : null,
+                subjectContent: quillSubject.root.innerHTML,
+                bodyContent: ckEditorInstance.getData(),
+                unsubscribeChoice: $('#unsubscribe').val(),
+                unsubscribeLink: ($('#unsubscribe').val() === "Yes") ? $('#link').val() : null,
+                attachmentAction: $('#attachmentAction').val(),
+                attachmentCount: $('.select-attach').length,
+                selectedAttachments: $('.select-attach').map(function() {
+                    return $(this).val();
+                }).get()
+            };
+
+            google.script.run
+                .withSuccessHandler(onTemplateSaved)
+                .withFailureHandler(onTemplateSaveFailed)
+                .saveTemplateInformation(templateData);
+        }
+    }
+
+    function onTemplateSaved() {
+        $('#Saving-Template').hide();
+        $('#Saving-Template-Successfull').css('display', 'flex');
+
+        setTimeout(function() {
+            google.script.host.close();
+        }, 3000); // Close after 3 seconds
+    }
+
+    function onTemplateSaveFailed(error) {
+        $('#Saving-Template').hide();
+        $('#Saving-Template-Failed').css('display', 'flex');
+
+        setTimeout(function() {
+            google.script.host.close();
+        }, 6000); // Close after 6 seconds
+    }
+</script>

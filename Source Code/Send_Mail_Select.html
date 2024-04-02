@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base target="_top">
+    <?!= include('Stylesheet'); ?>
+</head>
+
+<body>
+    <div id="sidebar">
+        <img src="https://lh7-us.googleusercontent.com/IprvEwobZZGe0uxjsdz_pFBQBstZwVwi3zYcrAAlEwnyn64AQWdKKexanzY0yHyvUxxFSCNEppP0otAdZ8De9Hc2uxjNWKL8kmsTwwv2ne_62MAkFcLs69siUF3gftV2qCneB7QXjDnhDdnz" alt="Logo">
+
+        <form onsubmit="event.preventDefault(); sendEmails(document.getElementById('template-dropdown').value)">
+            <label for="template-dropdown">Select a Template for sending mail</label>
+
+            <select id="template-dropdown" name="template-dropdown">
+                <? for (var i = 0; i < myOptions.length; i++) { ?>
+                <option value="<?= myOptions[i] ?>"><?= myOptions[i] ?></option>
+                <? } ?>
+            </select>
+
+            <div class="btn-container">
+                <input type="submit" value="Send">
+            </div>
+
+
+            <div style="position: fixed; bottom: 150px;" id="message">
+                Remaining auto-mails for today: <span style="font-weight: bold; font-size: larger;" id="mail-count"></span>
+            </div>
+
+            <div style="position: fixed; bottom: 10px; left: 10px;">
+                <a href="https://gentlereminder.in/" target="_blank" style="color: #999999; font-size: 11px; font-style: italic;">View feature in Documentation</a>
+            </div>
+        </form>
+    </div>
+    <script>
+        function sendEmails(rowCount) {
+            var dropdown = document.getElementById('template-dropdown');
+            var selectedOption = dropdown.options[dropdown.selectedIndex];
+            var templateName = selectedOption.text;
+            var selectedIndex = dropdown.selectedIndex;
+
+            google.script.run.sendEmails({
+                rowCount: selectedIndex,
+                templateName: templateName
+            });
+        }
+
+        // Update the email count in the HTML
+        function updateEmailCount(emailQuotaRemaining) {
+            const mailCountElement = document.getElementById("mail-count");
+            mailCountElement.textContent = emailQuotaRemaining;
+        }
+
+        // Call the server-side function to get remaining email count
+        google.script.run.withSuccessHandler(updateEmailCount).getRemainingDailyQuota();
+    </script>
+</body>
+
+</html>

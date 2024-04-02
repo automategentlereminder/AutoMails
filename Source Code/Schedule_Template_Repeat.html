@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base target="_top">
+    <?!= include('Stylesheet'); ?>
+</head>
+
+<body>
+    <div id="sidebar">
+        <img src="https://lh7-us.googleusercontent.com/IprvEwobZZGe0uxjsdz_pFBQBstZwVwi3zYcrAAlEwnyn64AQWdKKexanzY0yHyvUxxFSCNEppP0otAdZ8De9Hc2uxjNWKL8kmsTwwv2ne_62MAkFcLs69siUF3gftV2qCneB7QXjDnhDdnz" alt="Logo">
+
+        <form onsubmit="event.preventDefault(); submitSchedule(document.getElementById('template-dropdown').value)">
+            <label for="template-dropdown">Select a Template</label>
+            <select id="template-dropdown" name="template-dropdown">
+                <? for (var i = 0; i < myOptions.length; i++) { ?>
+                <option value="<?= myOptions[i] ?>"><?= myOptions[i] ?></option>
+                <? } ?>
+            </select>
+
+            <label>Pick a time:</label>
+            <div id="message-once-options" style="color: #0d4020; margin-top: 20px; margin-right: 20px;">
+                Data will be scanned everyday on your selected hours.<br> Please pick a time that respects receivers' privacy.
+            </div>
+
+            <select id="type" name="type" style="margin-top: 20px;">
+                <!-- Loop through 1 to 12 for hours -->
+                <option value="00">Midnight to 1am</option>
+                <option value="01">1am to 2am</option>
+                <option value="02">2am to 3am</option>
+                <option value="03">3am to 4am</option>
+                <option value="04">4am to 5am</option>
+                <option value="05">5am to 6am</option>
+                <option value="06">6am to 7am</option>
+                <option value="07">7am to 8am</option>
+                <option value="08">8am to 9am</option>
+                <option value="09">9am to 10am</option>
+                <option value="10" selected>10am to 11am</option>
+                <option value="11">11am to 12pm</option>
+                <option value="12">12pm to 1pm</option>
+                <option value="13">1pm to 2pm</option>
+                <option value="14">2pm to 3pm</option>
+                <option value="15">3pm to 4pm</option>
+                <option value="16">4pm to 5pm</option>
+                <option value="17">5pm to 6pm</option>
+                <option value="18">6pm to 7pm</option>
+                <option value="19">7pm to 8pm</option>
+                <option value="20">8pm to 9pm</option>
+                <option value="21">9pm to 10pm</option>
+                <option value="22">10pm to 11pm</option>
+                <option value="23">11pm to midnight</option>
+            </select>
+
+
+            <div class="btn-container" style="margin-top: 20px; display: flex;">
+                <input type="submit" value="schedule" style="margin-left: auto;">
+            </div>
+
+            <div id="message-once-successfull" style="color: #188038; display: none;">
+                Template is scheduled on repeat successfully!
+            </div>
+            <div id="message-once-failed" style="color: #FF6464; display: none;">
+                Looks like template is already scheduled on repeat, either wait or delete existing schedule.
+            </div>
+        </form>
+    </div>
+    <?!= include('Schedule_Template_Repeat_Script'); ?>
+</body>
+
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base target="_top">
+    <?!= include('Stylesheet'); ?>
+</head>
+
+<body>
+    <div id="sidebar">
+        <img src="https://lh7-us.googleusercontent.com/IprvEwobZZGe0uxjsdz_pFBQBstZwVwi3zYcrAAlEwnyn64AQWdKKexanzY0yHyvUxxFSCNEppP0otAdZ8De9Hc2uxjNWKL8kmsTwwv2ne_62MAkFcLs69siUF3gftV2qCneB7QXjDnhDdnz" alt="Logo">
+        <form onsubmit="event.preventDefault(); submitRow(this)">
+            <label for="input">Enter Row name:</label>
+            <input type="text" id="input" name="input">
+
+            <label for="type">Enter Row type:</label>
+            <select id="type" name="type" onchange="updateMessage()">
+                <option value="Text">Text</option>
+                <option value="Number">Number</option>
+                <option value="Date">Date</option>
+                <option value="Email ID">Email ID</option>
+                <option value="Attachments">Attachments</option>
+
+            </select>
+            <div id="message" id="message">Enter a name and type for your Default label</div>
+            <div class="btn-container">
+                <input type="submit" value="OK">
+            </div>
+
+            <div style="position: fixed; bottom: 10px; left: 10px;">
+                <a href="https://gentlereminder.in/" target="_blank" style="color: #999999; font-size: 11px; font-style: italic;">View feature in Documentation</a>
+            </div>
+
+        </form>
+    </div>
+    <script>
+        function submitRow(form) {
+            const input = form.input.value;
+            const type = form.type.value;
+            google.script.run.submitRow(form);
+        }
+    </script>
+</body>
+
+</html>

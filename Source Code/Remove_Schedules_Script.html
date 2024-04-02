@@ -1,0 +1,34 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script>
+    function deleteSchedule(rowCount) {
+        var templateName = $('#template-dropdown').val();
+        var selectedIndex = $('#template-dropdown').prop('selectedIndex');
+        var deleteOption = $('#delete-dropdown').val();
+
+
+        // Run the server-side function with the selected template details and datetime
+        google.script.run.withSuccessHandler(onScheduled)
+            .withFailureHandler(onScheduleFailed)
+            .deleteScheduledTriggers({
+                deleteTrigger: deleteOption,
+                rowCount: selectedIndex,
+                templateName: templateName
+            });
+
+        function onScheduled() {
+            $('#message-once-successfull').css('display', 'flex');
+
+            setTimeout(function() {
+                google.script.host.close();
+            }, 3000); // Close after 3 seconds
+        }
+
+        function onScheduleFailed(error) {
+            //do nothing for now
+        }
+
+        return false;
+    }
+</script>
+

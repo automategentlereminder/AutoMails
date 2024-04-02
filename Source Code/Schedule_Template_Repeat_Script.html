@@ -1,0 +1,40 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script>
+    function submitSchedule(rowCount) {
+        var $dropdown = $('#template-dropdown');
+        var selectedOption = $dropdown.find('option:selected');
+        var templateName = selectedOption.text();
+        var selectedIndex = $dropdown.prop('selectedIndex');
+
+        // Get selected time
+        var selectedTime = $("#type").val();
+
+        // Run the server-side function with the selected template details and datetime
+        google.script.run.withSuccessHandler(onScheduled)
+            .withFailureHandler(onScheduleFailed)
+            .createRepeatTrigger({
+                selectedTime: selectedTime,
+                rowCount: selectedIndex,
+                templateName: templateName
+            });
+
+        function onScheduled() {
+            $('#message-once-successfull').css('display', 'flex');
+
+            setTimeout(function() {
+                google.script.host.close();
+            }, 3000); // Close after 3 seconds
+        }
+
+        function onScheduleFailed(error) {
+            $('#message-once-failed').css('display', 'flex');
+
+            setTimeout(function() {
+                google.script.host.close();
+            }, 6000); // Close after 6 seconds
+        }
+
+        return false;
+    }
+</script>

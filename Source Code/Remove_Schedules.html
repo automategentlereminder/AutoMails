@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base target="_top">
+    <?!= include('Stylesheet'); ?>
+</head>
+
+<body>
+    <div id="sidebar">
+        <img src="https://lh7-us.googleusercontent.com/IprvEwobZZGe0uxjsdz_pFBQBstZwVwi3zYcrAAlEwnyn64AQWdKKexanzY0yHyvUxxFSCNEppP0otAdZ8De9Hc2uxjNWKL8kmsTwwv2ne_62MAkFcLs69siUF3gftV2qCneB7QXjDnhDdnz" alt="Logo">
+
+        <form onsubmit="event.preventDefault(); deleteSchedule(document.getElementById('template-dropdown').value)">
+            <label for="template-dropdown">Select a Template</label>
+
+            <select id="template-dropdown" name="template-dropdown">
+                <? for (var i = 0; i < myOptions.length; i++) { ?>
+                <option value="<?= myOptions[i] ?>"><?= myOptions[i] ?></option>
+                <? } ?>
+            </select>
+
+            <select id="delete-dropdown" name="delete-dropdown">
+                <option value="deleteSingle">Delete Single Schedule</option>
+                <option value="deleteRepeated">Delete Repeated Schedule</option>
+                <option value="both">Delete Both Schedules</option>
+            </select>
+            <div class="btn-container" style="margin-top: 20px; display: flex;">
+                <input type="submit" value="Remove" style="margin-left: auto;">
+            </div>
+
+            <div id="message-once-successfull" style="color: #188038; margin-top: 20px; display: none;">
+                Template Schedule is removed!
+            </div>
+        </form>
+    </div>
+    <?!= include('Remove_Schedules_Script'); ?>
+</body>
+
+</html>

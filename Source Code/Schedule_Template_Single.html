@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base target="_top">
+    <?!= include('Stylesheet'); ?>
+</head>
+
+<body>
+    <div id="sidebar">
+        <img src="https://lh7-us.googleusercontent.com/IprvEwobZZGe0uxjsdz_pFBQBstZwVwi3zYcrAAlEwnyn64AQWdKKexanzY0yHyvUxxFSCNEppP0otAdZ8De9Hc2uxjNWKL8kmsTwwv2ne_62MAkFcLs69siUF3gftV2qCneB7QXjDnhDdnz" alt="Logo">
+
+        <form onsubmit="event.preventDefault(); submitSchedule(document.getElementById('template-dropdown').value)">
+            <label for="template-dropdown">Select a Template</label>
+            <select id="template-dropdown" name="template-dropdown">
+                <? for (var i = 0; i < myOptions.length; i++) { ?>
+                <option value="<?= myOptions[i] ?>"><?= myOptions[i] ?></option>
+                <? } ?>
+            </select>
+
+            <label>Pick a date and time:</label>
+            <div id="message-once-options" style="color: #0d4020; margin-top: 20px; margin-right: 20px;">
+                Mail will be sent on your selected date and time. Please pick a time that's at least 30 minutes from now.
+            </div>
+
+            <div class="field-container horizontal-container" style="margin-top: 30px; display: flex; align-items: center;">
+                <input type="date" id="datePicker">
+                <input type="time" id="timePicker">
+            </div>
+
+            <div class="btn-container" style="margin-top: 20px; display: flex;">
+                <input type="submit" value="schedule" style="margin-left: auto;">
+            </div>
+
+            <div id="message-once-successfull" style="color: #188038; display: none;">
+                Template is scheduled successfully!
+            </div>
+            <div id="message-once-failed" style="color: #FF6464; display: none;">
+                Looks like template is alredy scheduled, either wait or delete existing schedule.
+            </div>
+        </form>
+    </div>
+    <?!= include('Schedule_Template_Singleuse_Script'); ?>
+</body>
+
+</html>

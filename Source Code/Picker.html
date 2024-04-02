@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base target="_top">
+    <?!= include('Stylesheet'); ?>
+</head>
+
+<body id="pickerBody">
+
+    <div id="loading">
+        <div class="loader" style="display: flex; justify-content: center; align-items: center; height: 100px;">
+            <span class="loader__element" style="border-color: #00ac47;"></span>
+            <span class="loader__element" style="border-color: #ffba00;"></span>
+            <span class="loader__element" style="border-color: #2684fc;"></span>
+        </div>
+    </div>
+
+    <div>
+        <p id="result"></p>
+    </div>
+    <script src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
+    <script>
+        var DEVELOPER_KEY = 'Not really needed for appscript projects'; // Convert from standard to google cloud project
+        var pickerApiLoaded = false;
+
+        function onApiLoad() {
+            gapi.load('picker', {
+                'callback': onPickerApiLoad
+            });
+        }
+
+        function onPickerApiLoad() {
+            pickerApiLoaded = true;
+            // Now, we can safely call getOAuthToken because pickerApiLoaded is true
+            getOAuthToken();
+        }
+
+        function getOAuthToken() {
+            google.script.run.withSuccessHandler(createPicker)
+                .withFailureHandler(showError).getOAuthToken();
+        }
+
+        function createPicker(token) {
+            if (pickerApiLoaded && token) {
+                var view = new google.picker.DocsView()
+                    .setIncludeFolders(true) // This allows both files and folders to be selected
+                    .setSelectFolderEnabled(true); // This allows users to select folders
+
+
+
+                var picker = new google.picker.PickerBuilder()
+                    .addView(view) // Allows for selecting all types of files and folders
+                    .enableFeature(google.picker.Feature.MULTISELECT_ENABLED) // Enable multiple file selection
+                    .setOAuthToken(token)
+                    //  .setDeveloperKey(DEVELOPER_KEY)
+                    .setCallback(pickerCallback)
+                    .setOrigin(google.script.host.origin)
+                    .hideTitleBar()
+                    .setMaxItems(200) //we don't need more items picked
+                    .build();
+                picker.setVisible(true);
+            } else {
+                showError('Unable to load the file picker.');
+            }
+        }
+
+        function pickerCallback(data) {
+            var action = data[google.picker.Response.ACTION];
+            if (action == google.picker.Action.PICKED) {
+                var documents = data[google.picker.Response.DOCUMENTS];
+                var pickedFiles = documents.map(function(doc) {
+                    return {
+                        url: doc.url,
+                        name: doc.name
+                    };
+                });
+                // Call the server-side Apps Script function to set the picked files
+                google.script.run.withSuccessHandler(function() {
+                    // Handle success, then close the dialog
+                    google.script.host.close(); // This closes the dialog
+                }).withFailureHandler(function(error) {
+                    // Handle error, then close the dialog
+                    google.script.host.close(); // This closes the dialog
+                }).setPickedFiles(pickedFiles);
+            } else if (action == google.picker.Action.CANCEL) {
+                // Close the dialog if user cancels
+                google.script.host.close();
+            }
+        }
+
+        function showError(message) {
+            document.getElementById('result').innerText = 'Error: ' + message;
+        }
+        onApiLoad();
+    </script>
+</body>
+
+</html>
