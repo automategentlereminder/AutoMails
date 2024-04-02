@@ -1,7 +1,7 @@
 # ✉️ Welcome to AutoMails - Your Ultimate Open-Source Mail Merge Solution! 🚀
 
 AutoMails is not just your average mail merge tool; it's the most advanced and user-friendly solution available to empower you in managing your email communications effortlessly. With AutoMails, you can revolutionize the way you handle your email campaigns, making them more personalized, efficient, and impactful than ever before.
-
+#
 ### How to Use It
 
 #### Manual Installation
@@ -20,6 +20,7 @@ AutoMails is not just your average mail merge tool; it's the most advanced and u
 3. Give 'Yes' to any confirmation dialogue you see. Connect with us for any questions.
 4. Reload the copied sheet, wait for a few seconds, and the AutoMails Menu will appear.
 
+#
 Here's why AutoMails stands out from the rest:
 
 ✨ **Advanced Conditional Sending:** Tailor your emails like never before by adding conditions to when and to whom they are sent. Whether it's based on specific data, recipient behavior, or any other criteria, AutoMails gives you the power to customize your email outreach for maximum effectiveness.
@@ -37,7 +38,7 @@ Whether you're a student seeking to streamline your email communications or a sm
 Join our community today and discover the ease and efficiency of email automation ! 📧
 
 Get started now by exploring our repository and unleashing the full potential of your email outreach strategy. Happy mailing! 🚀 💌
-
+#
 ### Additional Information
 
 **Q:** Can you remove the "Sent using ⚡ AutoMails" label from the bottom?
