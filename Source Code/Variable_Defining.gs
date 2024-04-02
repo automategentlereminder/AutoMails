@@ -12,49 +12,54 @@ function defineVariablesFromTagLocations() {
         };
     });
 
-    var sheetDefault = getSheetByKey('defaultSheetID');
-    var tagList2 = sheetDefault.getRange(1, 2, sheetDefault.getLastRow(), 1).getValues().flat();
-
-    var tags2 = tagList2.map(function(tagList2, index) {
-        return {
-            id: Math.floor(index) + 1,
-            value: tagList2
-        };
-    });
-
     // Define necessary variables
     var variableNamesBracketed = []; // For string replacements
     var variableNamesNonBracketed = []; // For use with new Function()
     var variableColumns = {}; // Object to store column numbers
 
-    // Define semi-dynamic variables with their corresponding values
-    tags2.forEach(function(tag) {
-        // This part makes up variable names
-        var variableName = "sD_" + tag.value.replace(/\s/g, "$");
+    try{
+          var sheetDefault = getSheetByKey('defaultSheetID');
+          var tagList2 = sheetDefault.getRange(1, 2, sheetDefault.getLastRow(), 1).getValues().flat();
 
-        // Fetch the type from the first column
-        var variableType = sheetDefault.getRange(tag.id, 1).getValue();
+          var tags2 = tagList2.map(function(tagList2, index) {
+              return {
+                  id: Math.floor(index) + 1,
+                  value: tagList2
+              };
+          });
 
-        var variableValue;
-        if (variableType === "Attachments") {
-            // Fetch the formula from the third column if the type is Attachments
-            var formula = sheetDefault.getRange(tag.id, 3).getFormula();
-            // Extract the ID from the formula
-            variableValue = extractIdFromFormula(formula);
-            /*
-            if we need to use date in future
-            else if (variableType === "Date") {
-            // Fetch the date value and format it
-            var variableValue = sheetDefault.getRange(tag.id, 3).getDisplayValue();
-            //variableValue = dateValue.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); */
-        } else {
-            // For other types, fetch the value directly
-            variableValue = sheetDefault.getRange(tag.id, 3).getValue();
-        }
-        variables[variableName] = variableValue;
-        variableNamesNonBracketed.push(variableName);
-        variableNamesBracketed.push("${" + variableName + "}");
-    });
+          // Define semi-dynamic variables with their corresponding values
+          tags2.forEach(function(tag) {
+              // This part makes up variable names
+              var variableName = "sD_" + tag.value.replace(/\s/g, "$");
+
+              // Fetch the type from the first column
+              var variableType = sheetDefault.getRange(tag.id, 1).getValue();
+
+              var variableValue;
+              if (variableType === "Attachments") {
+                  // Fetch the formula from the third column if the type is Attachments
+                  var formula = sheetDefault.getRange(tag.id, 3).getFormula();
+                  // Extract the ID from the formula
+                  variableValue = extractIdFromFormula(formula);
+                  /*
+                  if we need to use date in future
+                  else if (variableType === "Date") {
+                  // Fetch the date value and format it
+                  var variableValue = sheetDefault.getRange(tag.id, 3).getDisplayValue();
+                  //variableValue = dateValue.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); */
+              } else {
+                  // For other types, fetch the value directly
+                  variableValue = sheetDefault.getRange(tag.id, 3).getValue();
+              }
+              variables[variableName] = variableValue;
+              variableNamesNonBracketed.push(variableName);
+              variableNamesBracketed.push("${" + variableName + "}");
+          });
+
+    }catch(error){}
+
+
 
     tags1.forEach(function(tag) {
         // Below we are setting names of the variable for each tag
