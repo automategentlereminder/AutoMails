@@ -17,26 +17,35 @@ function generateEmailDropdowndata() {
             return "@ " + label;
         });
 
-    var sheetDefault = getSheetByKey('defaultSheetID');
-    // Fetch the labels for "Email ID" type from the "default label" sheet
-    var defaultData = sheetDefault.getDataRange().getValues();
-    var defaultTypeColumn = defaultData.map(function(row) {
-        return row[0];
-    });
-    var defaultLabelColumn = defaultData.map(function(row) {
-        return row[1];
-    });
-
-    var defaultLabels = defaultLabelColumn
-        .filter(function(label, index) {
-            return defaultTypeColumn[index] === "Email ID";
-        })
-        .map(function(label) {
-            return "# " + label;
+    var defaultLabels;
+    try {
+        var sheetDefault = getSheetByKey('defaultSheetID');
+        // Fetch the labels for "Email ID" type from the "default label" sheet
+        var defaultData = sheetDefault.getDataRange().getValues();
+        var defaultTypeColumn = defaultData.map(function(row) {
+            return row[0];
+        });
+        var defaultLabelColumn = defaultData.map(function(row) {
+            return row[1];
         });
 
+        defaultLabels = defaultLabelColumn
+            .filter(function(label, index) {
+                return defaultTypeColumn[index] === "Email ID";
+            })
+            .map(function(label) {
+                return "# " + label;
+            });
+    } catch (error) {}
+
+
     // Combine the dynamic and default labels into a single array
-    var allLabels = dynamicLabels.concat(defaultLabels);
+    var allLabels;
+    if (defaultLabels) {
+        allLabels = dynamicLabels.concat(defaultLabels);
+    } else {
+        allLabels = dynamicLabels;
+    }
 
     // Create data objects for dropdowns
     var toDropdownData = dynamicLabels.map(function(label) {
