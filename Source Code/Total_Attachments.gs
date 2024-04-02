@@ -8,6 +8,7 @@ function totalAttachments() {
         }
     }
 
+try{
     var sheetDefault = getSheetByKey('defaultSheetID');
     var firstColumn = sheetDefault.getRange(1, 1, sheetDefault.getLastRow(), 1).getValues();
     var defaultAttach = 0;
@@ -15,7 +16,8 @@ function totalAttachments() {
         if (String(firstColumn[i][0]).includes("Attachments")) {
             defaultAttach++;
         }
-    }
+      }
+    } catch(error){}
     return {
         dynamicAttach: dynamicAttach,
         defaultAttach: defaultAttach
